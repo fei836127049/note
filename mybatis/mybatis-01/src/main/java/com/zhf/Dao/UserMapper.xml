@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--对呀接口com.zhf.Dao.UserMapper-->
+<mapper namespace="com.zhf.Dao.UserMapper">
+<!--    获取全部用户-->
+    <select id="getUserList" resultType="com.zhf.pojo.Users">
+        select * from user;
+    </select>
+<!--    根据id获取用户-->
+    <select id="getUserListById" resultType="com.zhf.pojo.Users" parameterType="int">
+        select * from user where id = #{id};
+    </select>
+<!--    插入一条用户数据-->
+    <insert id="addUser" parameterType="com.zhf.pojo.Users">
+        insert into user(id,name,pwd) value (#{id},#{name},#{pwd})
+    </insert>
+<!--    修改用户数据-->
+    <update id="editUser" parameterType="com.zhf.pojo.Users">
+        update user set name=#{name},pwd=#{pwd} where id=#{id}
+    </update>
+</mapper>

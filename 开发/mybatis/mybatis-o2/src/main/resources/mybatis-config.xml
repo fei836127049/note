@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <properties resource="dp.properties"/>
+    <settings>
+        <setting name="logImpl" value="LOG4J"/>
+    </settings>
+<!--    可以给实体类起别名-->
+    <typeAliases>
+        <package name="zhf.pojo"/>
+    </typeAliases>
+    <environments default="development">
+        <environment id="development">
+            <transactionManager type="JDBC"/>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+<!--    每一个Dao中的*mapper都需要在这里注册-->
+<!--    <mappers>-->
+<!--        <mapper resource="com/zhf/Dao/UserMapper.xml"/>-->
+<!--    </mappers>-->
+
+
+<!--    使用注解进行开发时必须注册-->
+    <mappers>
+        <mapper class="zhf.Dao.UserMapper"/>
+    </mappers>
+</configuration>

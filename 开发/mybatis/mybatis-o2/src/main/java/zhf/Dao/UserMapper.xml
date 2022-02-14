@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--对呀接口com.zhf.Dao.UserMapper-->
+<mapper namespace="zhf.Dao.UserMapper">
+<!--    结果集映射-->
+    <resultMap id="UsersMapper" type="Users">
+<!--        column为数据库中的字段，property为实体类中的属性-->
+<!--        使用结果集映射可以让数据库中的字段和实体类中的属性不是用一个名字-->
+<!--        只用数据库与实体类不一样的字段即可-->
+        <result column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="pwd" property="pawd"/>
+    </resultMap>
+
+
+<!--    获取全部用户-->
+<!--    使用了resultMap后，这里也要使用使用了resultMap后，而不是resultType-->
+    <select id="getUserList" resultMap="UsersMapper">
+        select * from Users;
+    </select>
+<!--    根据id获取用户-->
+    <select id="getUserListById" resultType="Users" parameterType="int">
+        select * from Users where id = #{id};
+    </select>
+<!--    插入一条用户数据-->
+    <insert id="addUser" parameterType="Users">
+        insert into Users(id,name,pwd) value (#{id},#{name},#{pwd})
+    </insert>
+<!--    修改用户数据-->
+    <update id="editUser" parameterType="Users">
+        update Users set name=#{name},pwd=#{pwd} where id=#{id}
+    </update>
+
+
+    <!--    使用了分页查询-->
+    <select id="getUserListByLimit"  parameterType="map" resultMap="UsersMapper">
+        select * from Users  limit #{startPage},#{Pagesize};
+    </select>
+
+    <!--    获取全部用户-->
+    <!--    使用了resultMap后，这里也要使用使用了resultMap后，而不是resultType-->
+    <!--    使用RowBounds实现分页-->
+    <select id="getUserListByRowBounds" resultMap="UsersMapper">
+        select * from Users;
+    </select>
+</mapper>
