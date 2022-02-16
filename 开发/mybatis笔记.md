@@ -918,3 +918,7 @@ INSERT INTO `students`(`id`,`name`,`tid`)VALUES (5,'王','1');
     </resultMap>
 ```
 
+## 10、一对多
+
+比如一个老师拥有多个学生，对于老师而言就是一对多
+
