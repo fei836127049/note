@@ -875,6 +875,36 @@ INSERT INTO `students`(`id`,`name`,`tid`)VALUES (5,'王','1');
 5. 在核心配置文件绑定注册mapper接口或文件（多种方式）
 6. 测试
 
+
+
+### 两个对象分别为
+
+Students:
+
+```java 
+@Data
+public class Students {
+    private int id;
+    private String name;
+    //学生需要关联一个老师
+    private Teacher teacher;
+
+}
+```
+
+Teacher:
+
+```java 
+@Data
+public class Teacher {
+    private int id;
+    private String name;
+}
+
+```
+
+
+
 ### 按照嵌套查询处理
 
 ```xml 
@@ -921,4 +951,214 @@ INSERT INTO `students`(`id`,`name`,`tid`)VALUES (5,'王','1');
 ## 10、一对多
 
 比如一个老师拥有多个学生，对于老师而言就是一对多
+
+
+
+### 两个对象分别为
+
+Students:
+
+```java 
+@Data
+public class Students {
+    private int id;
+    private String name;
+    private int tid;
+
+}
+```
+
+Teacher:
+
+```java 
+@Data
+public class Teacher {
+    private int id;
+    private String name;
+  	//teacher拥有的学生为一个集合
+  	//一个老师拥有多个学生
+    private List<Students> students;
+}
+
+```
+
+
+
+### 按结果嵌套处理
+
+```xml
+<!--    按照结果嵌套查询-->
+    <select id="getTeacherAndStudent" resultMap="TeacherStudent">
+        select s.id sid,s.name sname,t.name tname,t.id tid
+        from students s ,teacher t
+        where s.tid = t.id and t.id=#{tid}
+    </select>
+    <resultMap id="TeacherStudent" type="Teacher">
+        <result property="id" column="tid"/>
+        <result property="name" column="tname"/>
+        <!--        负责的属性需要单独处理 对象：association 集合：collection
+        javaType:指定属性的类型
+        集合中泛型的信息使用oftype获取
+        -->
+      <!--        一个老师的students属性是一个集合-->
+        <collection property="students" ofType="Students">
+            <result property="id" column="sid"/>
+            <result property="name" column="sname"/>
+            <result property="tid" column="tid"/>
+        </collection>
+    </resultMap>
+```
+
+
+
+### 按照嵌套查询处理
+
+```xml
+<!--    子查询-->
+    <select id="getTeacherAndStudent2" resultMap="TeacherStudent2">
+        select *
+        from teacher where id=#{tid};
+    </select>
+    <resultMap id="TeacherStudent2" type="Teacher">
+        <collection property="students" javaType="ArrayList" ofType="Students" select="getStudentByTeacherID" column="id"/>
+    </resultMap>
+    
+    <select id="getStudentByTeacherID" resultType="Students">
+        select * from students where tid=#{tid};
+    </select>
+```
+
+### 小结
+
+1、关联-association（多对一）
+
+2、集合-collection（一对多）
+
+3、Javatype & ofType
+
+- javaType:用来指定实体类中属性的类型
+- ofType：用来指定映射到List或者容器中的pojo类型，泛型中的约束类型
+
+注意：
+
+- 保证SQL的可读性，保证通俗易懂
+- 注意一对多和多对一的中属性名和字段的问题
+- 如遇到问题不好排查可以使用日志，建议log4j
+
+### 面试高频：
+
+- MySQL引擎
+- InnoDB底层原理
+- 索引
+- 索引优化
+
+
+
+## 11、动态SQL
+
+**动态SQL：指的是根据不同的条件生成不同的SQL语句**
+
+
+
+使用动态 SQL 并非一件易事，但借助可用于任何 SQL 映射语句中的强大的动态 SQL 语言，MyBatis 显著地提升了这一特性的易用性。
+
+如果你之前用过 JSTL 或任何基于类 XML 语言的文本处理器，你对动态 SQL 元素可能会感觉似曾相识。在 MyBatis 之前的版本中，需要花时间了解大量的元素。借助功能强大的基于 OGNL 的表达式，MyBatis 3 替换了之前的大部分元素，大大精简了元素种类，现在要学习的元素种类比原来的一半还要少。
+
+- if
+- choose (when, otherwise)
+- trim (where, set)
+- foreach
+
+环境:建表
+
+```sql 
+CREATE TABLE `blog` (
+	`id` INT ( 50 ) NOT NULL COMMENT '博客ID',
+	`title` VARCHAR ( 100 ) NOT NULL COMMENT '博客标题',
+	`author` VARCHAR ( 30 ) NOT NULL COMMENT '博客作者',
+	`create_time` datetime NOT NULL COMMENT '创建时间',
+`view` INT ( 50 ) NOT NULL COMMENT '浏览量' 
+) ENGINE = INNODB DEFAULT CHARSET = utf8
+```
+
+**IF**:Mapper的写法
+
+```xml
+    <select id="queryBlogIF" parameterType="map" resultType="Blog">
+        select * from blog where 1=1
+        <if test="title != null">
+            and title=#{title}
+        </if>
+        <if test="author != null">
+            and author=#{author}
+        </if>
+    </select>
+```
+
+**choose (when, otherwise)**：我们不想使用所有的条件，而只是想从多个条件中选择一个使用。针对这种情况，MyBatis 提供了 choose 元素，它有点像 Java 中的 switch 语句。
+
+```xml
+    <select id="queryBlogChose" parameterType="map" resultType="Blog">
+        select * from blog
+        <where>
+            <choose>
+                <when test="title != null">
+                    title=#{title}
+                </when>
+                <when test="author != null">
+                    and author=#{author}
+                </when>
+                <otherwise>
+                    and views=#{views}
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+<!-- 选择其中一个条件执行，优先选择最前面的条件-->
+```
+
+
+
+**trim (where, set)**
+
+where：*where* 元素只会在子元素返回任何内容的情况下才插入 “WHERE” 子句。而且，若子句的开头为 “AND” 或 “OR”，*where* 元素也会将它们去除。
+
+```xml
+<select id="findActiveBlogLike"
+     resultType="Blog">
+  SELECT * FROM BLOG
+  <where>
+    <if test="state != null">
+         state = #{state}
+    </if>
+    <if test="title != null">
+        AND title like #{title}
+    </if>
+    <if test="author != null and author.name != null">
+        AND author_name like #{author.name}
+    </if>
+  </where>
+</select>
+```
+
+**set语句**：*set* 元素会动态地在行首插入 SET 关键字，并会删掉额外的逗号（这些逗号是在使用条件语句给列赋值时引入的）。
+
+```xml
+    <update id="updateBlog" parameterType="map">
+        update  blog
+        <set>
+            <if test="title != null">
+                title=#{title},
+            </if>
+            <if test="author != null">
+                author=#{author},
+            </if>
+        </set>
+            where id=#{id}
+    </update>
+```
+
+
+
+**动态SQL还是SQL语句，只是我们可以在SQL层面去执行一个逻辑代码；**
 
