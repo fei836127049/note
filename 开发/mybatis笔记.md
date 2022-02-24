@@ -1069,7 +1069,7 @@ public class Teacher {
 - trim (where, set)
 - foreach
 
-环境:建表
+### 环境:建表
 
 ```sql 
 CREATE TABLE `blog` (
@@ -1081,7 +1081,7 @@ CREATE TABLE `blog` (
 ) ENGINE = INNODB DEFAULT CHARSET = utf8
 ```
 
-**IF**:Mapper的写法
+### **IF**:Mapper的写法
 
 ```xml
     <select id="queryBlogIF" parameterType="map" resultType="Blog">
@@ -1095,7 +1095,9 @@ CREATE TABLE `blog` (
     </select>
 ```
 
-**choose (when, otherwise)**：我们不想使用所有的条件，而只是想从多个条件中选择一个使用。针对这种情况，MyBatis 提供了 choose 元素，它有点像 Java 中的 switch 语句。
+### **choose (when, otherwise)**
+
+我们不想使用所有的条件，而只是想从多个条件中选择一个使用。针对这种情况，MyBatis 提供了 choose 元素，它有点像 Java 中的 switch 语句。
 
 ```xml
     <select id="queryBlogChose" parameterType="map" resultType="Blog">
@@ -1119,7 +1121,7 @@ CREATE TABLE `blog` (
 
 
 
-**trim (where, set)**
+### **trim (where, set)**
 
 where：*where* 元素只会在子元素返回任何内容的情况下才插入 “WHERE” 子句。而且，若子句的开头为 “AND” 或 “OR”，*where* 元素也会将它们去除。
 
@@ -1141,7 +1143,9 @@ where：*where* 元素只会在子元素返回任何内容的情况下才插入 
 </select>
 ```
 
-**set语句**：*set* 元素会动态地在行首插入 SET 关键字，并会删掉额外的逗号（这些逗号是在使用条件语句给列赋值时引入的）。
+### **set语句**
+
+*set* 元素会动态地在行首插入 SET 关键字，并会删掉额外的逗号（这些逗号是在使用条件语句给列赋值时引入的）。
 
 ```xml
     <update id="updateBlog" parameterType="map">
@@ -1161,4 +1165,12 @@ where：*where* 元素只会在子元素返回任何内容的情况下才插入 
 
 
 **动态SQL还是SQL语句，只是我们可以在SQL层面去执行一个逻辑代码；**
+
+
+
+### SQL片段
+
+
+
+### foreach
 
