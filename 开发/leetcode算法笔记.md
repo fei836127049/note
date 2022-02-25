@@ -129,3 +129,37 @@ public class BestTime {
 
 给你一个二叉树的根节点 root ，返回其 最大路径和 。
 
+
+
+
+
+
+
+### 152、乘积最大子数组
+
+给你一个整数数组 nums ，请你找出数组中乘积最大的非空连续子数组（该子数组中至少包含一个数字），并返回该子数组所对应的乘积。
+
+测试用例的答案是一个 32-位 整数。
+
+子数组 是数组的连续子序列
+
+
+
+思路：双层循环，每一次计算当前元素所在的子集的最大值；
+
+```java
+    public int maxProduct(int[] nums) {
+        int len = nums.length;
+        int ans = Integer.MIN_VALUE;
+        for (int i = 0; i < len; i++) {
+            int temp = 1;
+            for (int j = i; j < len; j++) {
+                temp = temp * nums[j];
+                ans = Math.max(ans,temp);
+            }
+
+        }
+        return ans;
+    }
+```
+
