@@ -1170,7 +1170,109 @@ where：*where* 元素只会在子元素返回任何内容的情况下才插入 
 
 ### SQL片段
 
+有时候我们可能将一些功能的一部分抽取出来，方便复用
 
+
+
+```xml
+<!--提高代码的复用-->
+1、使用SQL标签抽取公共的部分
+    <sql id="if-title-author">
+        <if test="title != null">
+            title=#{title}
+        </if>
+        <if test="author != null">
+            and author=#{author}
+        </if>
+    </sql>
+2、在需要使用的地方使用include标签引用
+    <select id="queryBlogIF" parameterType="map" resultType="Blog">
+        select * from blog
+        <where>
+            <include refid="if-title-author"></include>
+        </where>
+
+    </select>
+```
+
+注意事项：
+
+- 最好基于单表来定义SQL片段
+- 不要存在where标签
 
 ### foreach
 
+
+
+
+
+```xml
+   <!--  select * from blog where and (id=1 or id=2 or id=3)     -->
+<select id="queryBlogForeach" parameterType="map" resultType="Blog">
+        select * from blog
+        <where>
+         <!--在集合ids中遍历id元素，在拼接SQL的时候，过前面的and是第一个，会自动去除--> 
+            <foreach collection="ids" item="id" open="and (" close=")" separator="or">
+                id=#{id}
+            </foreach>
+        </where>
+    </select>
+```
+
+**动态SQL就是在拼接SQL，我们只要保证SQL的正确性，按照SQL的格式去排列组合。**
+
+先在MySQL中写出完整的SQL，再对应的去修改成为我们的动态SQL实现即可
+
+
+
+## 12、缓存
+
+### 1、简介
+
+```
+查询：  连接数据库，消耗资源！
+		一次查询的结果，暂存在一个可以直接取到的地方——————》内存：缓存
+		
+我们再次查询相同数据的时候直接走缓存，就不用走数据库了；
+```
+
+缓存是什么：
+
+- 存在内存中的临时数据
+- 将用户经常查询的数据放在缓存（内存）中，用户去查询数据就不用从磁盘上（关系型数据库文件）查询，从缓存中查询，从而提高查询效率，解决了高并发系统的性能问题
+
+为什么用缓存
+
+- 减少和数据库的交互，减少系统开销，提高系统效率
+
+什么样的数据能使用缓存
+
+- 经常查询并且不经常改变的数据。可以使用缓存
+
+### 2、mybatis缓存
+
+mybatis包含一个非常强大的查询缓存特性，他可以非常方便的定制和配置缓存。缓存可以极大的提升查询效率。
+
+mybatis系统默认定义了两极缓存：一级缓存，二级缓存
+
+- 默认情况下只有一级缓存开启。sqlsession级别的缓存，也称本地缓存
+- 二级缓存需要手动开启和配置，他是基于namespace级别的缓存。
+- 为了提高拓展性，mybatis定义了缓存接口cache。我们可以通过实现cache接口来自定义二级缓存。
+
+### 3、一级缓存
+
+一级缓存也叫本地缓存：sqlsession
+
+- 与数据库同一次会话期间查询到的数据会放在本地缓存中
+- 以后如果需要获取相同的数据，直接从缓存中拿，不需要再次查询数据库 
+
+缓存失效的情况：
+
+- 查询不同的数据
+- 增删改操作，可能会改变原来的数据，所以必定会刷新缓存！
+- 查询不同的Mapper.xml
+- 手动清理缓存 
+
+**小结：一级缓存默认开启，只在一次sqlsession中有效，也就是拿到连接到关闭连接的这个区间段**
+
+一级缓存就是一个map
