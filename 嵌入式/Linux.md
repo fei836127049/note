@@ -281,7 +281,7 @@ int system(const char * string);
 pid_t fork(void);
 ```
 
-![fork调用](.\pic\fork调用.png)
+![fork调用](https://gitee.com/harfe/mybatis/blob/master/%E5%B5%8C%E5%85%A5%E5%BC%8F/pic/fork%E8%B0%83%E7%94%A8.png)
 
 fork调用返回的是新的子进程的PID。新进程继续执行，子进程中的fork调用返回的是0。
 
