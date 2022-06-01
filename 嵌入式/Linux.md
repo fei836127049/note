@@ -252,7 +252,7 @@ command:设置完成不同的任务选项
 
 **系统进程**：使用ps 命令查看进程
 
-![进程说明](pic\进程说明.png)
+![进程说明](.\pic\进程说明.png)
 
 stat一列是用来表明进程的当前状态。
 
@@ -281,7 +281,7 @@ int system(const char * string);
 pid_t fork(void);
 ```
 
-![fork调用](pic\fork调用.png)
+![fork调用](.\pic\fork调用.png)
 
 fork调用返回的是新的子进程的PID。新进程继续执行，子进程中的fork调用返回的是0。
 
@@ -304,7 +304,7 @@ pid_t wait(int * stat_loc);
 
 信号是UNIX和Linux系统响应某些条件而产生的一个事件。信号是由某些错误条件而生产的，如内存段冲突、浮点处理器错误或者非法指令等。它们由shell和终端处理器生成来引起中断，它们还可以作为在进程间传递消息或者修改行为的一种方式，明确的由一个进程发送给另一个进程。信号可以被**生成**、**捕获**、**响应**或者**忽略**。
 
-![信号](pic\信号.png)
+![信号](.\pic\信号.png)
 
 如果进程接收到这些信号中的一个，但是事先没有安排捕获它，进程将会立刻终止。
 
@@ -351,7 +351,7 @@ int sigaction(int sig, const struct sigaction *act, struct sigaction *oact);
 
 结构定义在signal.h中，它的作用是定义在接受到参数sig指定的信号后应该采取的行动。该结构至少包含以下几个成员：
 
-![sigaction](pic\sigaction.png)
+![sigaction](.\pic\sigaction.png)
 
 
 
