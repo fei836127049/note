@@ -252,7 +252,7 @@ command:设置完成不同的任务选项
 
 **系统进程**：使用ps 命令查看进程
 
-![进程说明](E:\zhf\笔记\开发\pic\进程说明.png)
+![进程说明](pic\进程说明.png)
 
 stat一列是用来表明进程的当前状态。
 
@@ -281,7 +281,7 @@ int system(const char * string);
 pid_t fork(void);
 ```
 
-![fork调用](E:\zhf\笔记\开发\pic\fork调用.png)
+![fork调用](pic\fork调用.png)
 
 fork调用返回的是新的子进程的PID。新进程继续执行，子进程中的fork调用返回的是0。
 
@@ -302,4 +302,63 @@ pid_t wait(int * stat_loc);
 
 ### 5.3信号
 
-信号是UNIX和Linux系统响应某些条件而产生的一个事件。信号是由某些错误条件而生产的
+信号是UNIX和Linux系统响应某些条件而产生的一个事件。信号是由某些错误条件而生产的，如内存段冲突、浮点处理器错误或者非法指令等。它们由shell和终端处理器生成来引起中断，它们还可以作为在进程间传递消息或者修改行为的一种方式，明确的由一个进程发送给另一个进程。信号可以被**生成**、**捕获**、**响应**或者**忽略**。
+
+![信号](pic\信号.png)
+
+如果进程接收到这些信号中的一个，但是事先没有安排捕获它，进程将会立刻终止。
+
+程序可以用signal库函数来处理信号
+
+```c
+#include<signal.h>
+/*
+signal是一个带sig和func两个参数的函数。准备捕获或忽略的信号由参数sig给出，接受到指定的信号后将要调用的函数由参数func给出，信号处理函数必须有一个int类型的参数（接受到的信号代码），并且返回类型为void
+*/
+void (*signal(int sig, void (*func)(int)))(int);
+```
+
+```c
+#include<signal.h>
+#include<stdlib.h>
+#include<stdio.h>
+#include<unistd.h>
+/*对通过参数sig传递进来的信号做出相应。信号出现时，程序调用该函数。*/
+void ouch(int sig)
+{
+    printf("OUCH - I got signal %d\r\n", sig);
+    (void) signal(SIGINT,SIG_DFL);
+}
+int main()
+{
+    (void) signal(SIGINT,ouch);
+    while (1)
+    {
+        /* code */
+        printf("Hello World!\r\n");
+        sleep(1);
+    }
+    
+}
+```
+
+一般不使用signal接口，在程序中应该使用**sigaction**函数，它定义更清晰、执行更可靠。
+
+```c
+#include<signal.h>
+int sigaction(int sig, const struct sigaction *act, struct sigaction *oact);
+```
+
+结构定义在signal.h中，它的作用是定义在接受到参数sig指定的信号后应该采取的行动。该结构至少包含以下几个成员：
+
+![sigaction](pic\sigaction.png)
+
+
+
+#### 5.3.1发送信号
+
+进程可以通过调用**kill**函数向包含它本身在内的其他进程发送一个信号。如果程序没有发送该信号的权限，对kill函数的调用就会失败。（原因通常是目标进程由另一个用户所拥有。）
+
+alarm函数：用来在second秒之后安排发送一个SIGALRM信号。但是由于处理的延时和时间调度的不确定性，实际闹钟时间将比预先安排的要稍微拖后一点。将seconds设置为0，将取消所有已设置的闹钟请求。如果在接受到SIGALRM信号之前再次调用alarm函数，则闹钟开始重新计时。每个进程只能有一个闹钟时间。
+
+pause函数：将程序挂起直到程序接收到一个信号时，预设好的信号处理函数将开始运行。
