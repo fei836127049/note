@@ -362,3 +362,71 @@ int sigaction(int sig, const struct sigaction *act, struct sigaction *oact);
 alarm函数：用来在second秒之后安排发送一个SIGALRM信号。但是由于处理的延时和时间调度的不确定性，实际闹钟时间将比预先安排的要稍微拖后一点。将seconds设置为0，将取消所有已设置的闹钟请求。如果在接受到SIGALRM信号之前再次调用alarm函数，则闹钟开始重新计时。每个进程只能有一个闹钟时间。
 
 pause函数：将程序挂起直到程序接收到一个信号时，预设好的信号处理函数将开始运行。
+
+#### 5.3.2信号集
+
+```c
+#include<signal.h>
+/*从信号集中增加给定的信号signo*/
+int sigaddset(sigset_t *set, int signo);
+/*将信号集初始化为空*/
+int sigemptyset(sigset_t *set);
+/*将信号集初始化为包含所有已定义的信号*/
+int sigfillset(sigset_t *set);
+/*从信号集中删除给定的信号signo*/
+int sigdelset(sigset_t * set, int signo);
+/*判断一个给定信号是否是一个信号集的成员:是返回1，不是返回0，无效信号返回-1*/
+int sigismember(sigset_t * set, int signo);
+/*负责进程的信号屏蔽字的设置或者检查*/
+int sigprocmask(int how,const sigset_t *set,sigset_t *oset);
+/*将被阻塞的信号中停留在待处理状态的一组信号写到参数set指向的信号集中*/
+int sigpending(sigset_t *set);
+/*将自己挂起，指导信号集中的一个信号到达为止*/
+int sigsuspend(const sigset_t *sigmask);
+```
+
+## 6、线程
+
+- 在进程中创建新线程
+- 在一个进程中同步线程之间的数据访问
+- 修改线程的属性
+- 在同一个进程中，从一个线程中控制另一个线程
+
+在一个程序中的多个执行路线叫**线程**：进程内部的一个控制序列。
+
+线程优缺点：
+
+- 优点：
+  - 新线程的创建代价比新进程小
+  - 能让程序看起来在同时做多件事情
+  - 能将程序的几个部分分成多个线程执行
+  - 线程之间的切换需要操作系统做的工作要比进程之间的切换少得多
+- 缺点：
+  - 编程需要很仔细
+  - 调试困难
+  - 对硬件有一定的要求
+
+创建一个新线程：
+
+```c
+#include<pthread.h>
+/*
+*thread:指向pthread_t类型数据结构的指针
+*attr:用于设置线程的属性，一般不需要特殊的属性，只需要设置为NULL即可
+*
+*/
+int pthread_create(pthread_t *thread, pthread_attr_t *attr, void *(*start_routine)(void *),void *arg);
+```
+
+终止线程：
+
+```c
+void pthread_exit(void *retval);
+```
+
+### 6.1同步
+
+#### 6.1.1用信号量同步
+
+
+
