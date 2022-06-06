@@ -428,5 +428,37 @@ void pthread_exit(void *retval);
 
 #### 6.1.1用信号量同步
 
+- 二进制信号量
+  - 只有0和1两种取值。保护一段代码，使其每次只能被一个执行线程运行。
+- 计数信号量
+  - 有更大的取值范围，可以允许有限数目的线程执行一段指定的代码。（不常用）
+
+```c
+#include<semaphore.h>
+/*初始化函数*/
+/*
+*pshared:控制信号量的类型，0：表示信号量是当前进程的局部信号量，否则这个信号量可以在多个进程之间共享。
+*/
+int sem_init(sem_t *sem, int pshared, unsigned int value);
+/*以原子操作的方式给信号量的值减1，等到信号量出现非零值才开始操作，否则会一直等待。*/
+int sem_wait(sem_t * sem);
+/*以原子操作的方式给信号量的值加1：两个线程企图给一个信号量加1，两个进程之间互不干扰，最后信号量值被加2*/
+int sem_post(sem_t * sem);
+```
+
+### 6.1.2用互斥量进行同步
+
+它允许程序员锁住某个对象，使得每次只能有一个线程访问它。为了控制对关键代码的访问，必须在进入这段代码之前锁住一个互斥量，然后在完成操作之后解锁它。
+
+```c
+#include<pthread.h>
+int pthread_mutex_init(pthread_mutex * mutex,const pthread_mutexattr_t *mutexattr);
+int pthread_mutex_lock(pthread_mutex * mutex);
+int pthread_mutex_unlock(pthread_mutex * mutex);
+int pthread_mutex_destroy(pthread_mutex * mutex);
+```
+
+如果程序试图对一个已经加了锁的互斥量调用pthread_mutex_lock函数，程序就会被阻塞，而又因为拥有互斥量的这个线程正是现在被阻塞的线程，所以互斥量就永远不会被解锁，程序也就进入了**死锁状态**。
+
 
 
