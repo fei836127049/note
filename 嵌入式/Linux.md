@@ -460,5 +460,75 @@ int pthread_mutex_destroy(pthread_mutex * mutex);
 
 如果程序试图对一个已经加了锁的互斥量调用pthread_mutex_lock函数，程序就会被阻塞，而又因为拥有互斥量的这个线程正是现在被阻塞的线程，所以互斥量就永远不会被解锁，程序也就进入了**死锁状态**。
 
+### 6.2线程的属性
 
+**脱离线程**：在主线程为用户提供服务的同时创建第二个进程，第二个进程的工作结束可以直接终止，并不需要再回到主线程中.
 
+相关函数：
+
+```c
+#include<pthread.h>
+int pthread_attr_init(pthread_attr_t * attr);
+int pthread_attr_setdetachstate(pthread_attr_t * attr, int detachstate);
+int pthread_attr_getdetachstate(const pthread_attr_t * attr, int detachstate);
+int pthread_attr_setschedpolicy(pthread_attr_t * attr, int policy);
+int pthread_attr_getschedpolicy(pthread_attr_t * attr, int policy);
+int pthread_attr_setschedparam(pthread_attr_t * attr, const struct sched_param *param);
+int pthread_attr_getschedparam(pthread_attr_t * attr, const struct sched_param *param);
+int pthread_attr_setinheritsched(pthread_attr_t * attr, int *inherit);
+int pthread_attr_getinheritsched(pthread_attr_t * attr, int *inherit);
+int pthread_attr_setscope(pthread_attr_t * attr, int *scope);
+int pthread_attr_getscope(pthread_attr_t * attr, int *scope);
+int pthread_attr_setstacksize(pthread_attr_t * attr, int *scope);
+int pthread_attr_getstacksize(pthread_attr_t * attr, int *scope);
+```
+
+- detachstate:允许我们无需对线程进行重新合并。
+- schedpolicy：控制线程的调度方式。
+- schedparam：这个属性是和schedpolicy属性结合使用的，它可以对以sched_other策略运行的线程的调度进行控制。
+- inheritsched：有两个取值
+  - pthread_explicit：表示调度由属性明确的设置（默认取值）
+  - pthread_inherit_sched：新线程将沿用其创建者所使用的参数。
+- scope：控制一个线程调度的计算方式。
+- stacksize：控制线程创建的栈大小（字节）。
+
+### 6.3取消一个线程
+
+线程可以在被要求终止时改变其行为。
+
+线程终止的函数：
+
+```c
+#include<pthread.h>
+/*提供一个线程标识符，我们就能发送请求来取消它*/
+int pthread_cancel(pthread_t thread);
+/*
+*state:PTHREAD_CANCEL_ENABLE,允许线程接收取消请求；*PTHREAD_CANCEL_DISABLE，忽略取消请求。
+*oldstate：用于获取先前的取消状态。
+*/
+int pthread_setcancelstate(int state, int *oldstate);
+```
+
+如果取消请求被接受了，线程就可以进入到第二个控制层次。
+
+```c
+#include<pthread.h>
+/*
+*type的取值：
+*PTHREAD_CANCEL_ASYNCHRONOUS:将使得在接受到取消请求后立即采取行动；
+*PTHREAD_CANCEL_DEFERRED：它将使得在接收到取消请求后一直等待直到线程执行了一些函数之一才会采取行动。
+*old参数可以保存先前的状态，如果不想直到先前的状态可以穿NULL；
+*/
+int pthread_setcanceltype(int type,int *oldtype);
+```
+
+## 7、进程间通信：管道
+
+- 管道的定义
+- 进程管道
+- 管道调用
+- 父进程和子进程
+- 命名管道：FIFO
+- 客户/服务器架构
+
+管道：当从一个进程连接数据流到另一个进程时，就称为**管道**
