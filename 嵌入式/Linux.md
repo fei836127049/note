@@ -532,3 +532,63 @@ int pthread_setcanceltype(int type,int *oldtype);
 - 客户/服务器架构
 
 管道：当从一个进程连接数据流到另一个进程时，就称为**管道**
+
+### 7.1进程管道
+
+- popen函数
+- PClose函数
+
+```c
+#include<stdio.h>
+/*
+*open_mode:只能取r和w
+****r:被调用程序的输出就可以被调用程序使用，调用程序利用popen函数返回的FILE*文件流指针就可以通过常用的stdio库函数来读取被调用程序的输出。
+****w:调用程序就可以用fwrite调用向被调用程序发送数据，而被调用程序可以在自己的标准输入上读取这些数据。
+*
+*/
+FILE *popen(const char * command, const char *open_mode);
+/*
+*pclose函数：用popen启动的进程结束时，我们可以用PClose函数关闭与之关联的文件流。
+*/
+int pclose(FILE * stream_close);
+```
+
+
+
+popen函数：允许一个程序将另一个程序作为新进程来启动，并且可以传递数据给它或者通过它接收数据。
+
+#### 7.1.1实现popen
+
+请求popen调用运行一个程序时，它首先启动shell，然后将command字符串作为一个参数传递给它。
+
+- 优点：在启动程序之前，先启动shell来分析命令字符串，就可以使用各种shell拓展在程序启动之前就全部完成。它允许我们通过popen启动非常复杂的shell命令。
+- 缺点：针对每一个popen调用，不仅要启动一个被请求的程序，还要启动一个shell，每个popen调用将多启动两个进程，导致popen函数的调用成本较高，对目标命令的调用比正常方式慢一些。
+
+### 7.2pipe调用
+
+pipe函数在两个程序之间传递数据时不需要启动一个shell来解释请求的命令。该函数在数组中填写两个新的文件描述符后返回0，如果失败则返回-1并设置errno来表明失败的原因。
+
+- EMFILE：进程使用的文件描述符过多
+- ENFILE：系统的文件表已满
+- EFAULT：文件描述符无效
+
+```c
+#include<unistd.h>
+/*
+*参数是一个由两个整数类型的文件描述符组成的数组的指针。
+*/
+int pipe(int file_descriptor[2]);
+```
+
+两个返回的文件描述符以一种特殊的方式连接起来，写在file_descriptor[1]的所有数据都可以从file_descriptor[0]读回来。处理方式采用**先进先出**。一般采用file_descriptor[1]写数据，file_descriptor[0]读数据，如果不这样可能会调用失败并返回-1。
+
+pipe函数调用采用的是**文件描述符**而不是文件流，因此必须使用底层的**read和write**调用来访问数据，而不能用文件流库函数fread和fwrite。
+
+### 7.3父进程和子进程
+
+父进程和子进程之间的数据读写关系：父进程将数据通过文件描述符file_pipes[1]写进管道，子进程通过file_pipes[0]从管道中读取数据
+
+![pipe](E:\zhf\笔记\Gitee\mybatis\嵌入式\pic\pipe.png)
+
+
+
