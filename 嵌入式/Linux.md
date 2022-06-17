@@ -81,7 +81,6 @@ wie geht's?
     set $(date)
     ```
 
-  - ​
 
 
 ## 2、标准I/O库
@@ -716,4 +715,27 @@ int semop(int sem_id, struct sembuf *sem_ops, size_t num_sem_ops);
   - shm_id：是shmget返回的共享内存标识符。
 
   - command：要采取的动作。
+
+
+### 8.3消息对列
+
+消息队列与命名管道有许多相似之处，但是少了打开和关闭管道方面的复杂性。消息队列并未解决我们在命名管道时遇到的一些问题，比如管道满时的阻塞问题。
+
+- 消息队列提供了一种在两个不相关的进程之间传递数据的相当简单且有效的方法。它独立于发送和接收进程而存在，这消除了在同步命名管道的打开和关闭时可能产生的一些困难。
+- 还提供了一种从一个进程向另一个进程发送一个数据块的方法。每个数据块都被认为含有一个类型，接收过程可以独立地收到含有不同类型的数据块。我们可以通过发送消息来几乎完全避免命名管道的同步和阻塞问题。我们可以用一些方法来提前查看紧急消息。
+- 与管道一样，每个数据块都有一个最大长度限制，系统中所有队列所包含的全部数据块的总长度也有上限。
+
+消息队列函数：
+
+```c
+#include<sys/msg.h>
+/*消息队列控制函数*/
+int msgctl(int msgid, int cmd, struct msqid_ds *buf);
+/*创建和访问一个消息队列*/
+int msgget(ket_t key, int msgflg);
+/*从一个消息队列中获取消息*/
+int msgrcv(int msqid, void *msg_ptr, size_t msg_sz, long int msgtype, int msgflg);
+/*将消息添加到消息队列中*/
+int msgsnd(int msqid, void *msg_ptr, size_t msg_sz, int msgflg);
+```
 
