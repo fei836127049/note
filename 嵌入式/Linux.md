@@ -739,3 +739,106 @@ int msgrcv(int msqid, void *msg_ptr, size_t msg_sz, long int msgtype, int msgflg
 int msgsnd(int msqid, void *msg_ptr, size_t msg_sz, int msgflg);
 ```
 
+## 9.socket套接字
+
+**进程间通信**
+
+套接字是一种通信机制，凭借之中机制，客户/服务器系统的开发工作既可以在本地单机上进行，也可以跨网络进行。Linux所提供的功能和网络工具通常都是通过套接字进行通信的。
+
+套接字应用程序的连接过程：
+
+1. 服务器应用程序会调用socket来创建一个套接字，它是系统分配给该服务器进程的类似文件描述符的资源，不会与其他进程共享。
+2. 服务器进程会给套接字起个名字。本地套接字的名字有Linux文件系统命名。
+
+套接字的属性：
+
+- 套接字的域：域指定套接字通信中使用的网络介质，最常见的套接字域是AF_INET（指的是Internet网络），底层为ip协议。ipv6使用不同的套接字域AF_INET6。
+- 套接字类型：一个套接字域可能有多种不同的通信方式，而每种通信方式有其不同的特性。Internet网络协议提供了两种通信协议：
+  - 流套接字：提供的是一个有序、可靠、双向字节流的连接。发送的数据可以确保不会丢失、复制或乱序到达。大的消息将会被分片、传输、再重组。
+  - 数据报套接字：它对可以发送的数据报长度有限制，数据报作为一个单独的网络消息被传输，可能会丢失、复制、乱序到达。在AF_INET域中通过UDP/IP连接实现的。数据报使用与信息服务中的“单次”查询，
+
+套接字函数：
+
+- 创建套接字：
+
+  - ```c
+    #include<sys/types.h>
+    #include<sys/socket.h>
+    int socket(int domain, int type, int protocal);
+    ```
+
+  - 创建的套接字是一个通信线路的一个端点。domain参数指定协议族，type指定这个套接字的通信类型，Protocol参数指定使用的协议。
+
+  - 最常见的套接字域是AF_UNIX和AF_INET，AF_UNIX用于通过UNIX和Linux文件系统实现的本地套接字，AF_INET用于UNIX网络套接字。AF_INET套接字可以用于通过包括因特网在内的TCP/IP网络通信的程序。
+
+  - SOCK_STREAM是一个有序、可靠、面向连接的双向字节流。
+
+  - SOCK_DGRAM是数据报服务。
+
+  - Protocol一般由，接字类型和套接字域来决定，通常不需要选择。
+
+- 套接字地址：
+
+  - 每个套接字都有自己的地址格式。
+
+    - AF_UNIX域套接字来说，地址结构：
+
+      - ```c
+        struct sockaddr_un{
+          sa_family_t sun_family;
+          char sun_path[];
+        }
+        ```
+
+    - AF_INET套接字来说，地址结构：
+
+      - ```c
+        struct sockaddr_in{
+          short int sin_family;
+          unsigned short int sin_port;
+          struct in_addr sin_addr;
+        }
+        struct in_addr{
+          unsigned long int s_addr;
+        }
+        ```
+
+- 命名套接字：
+
+  - 要想让通过socket调用创建的套接字可以被其他进程使用，服务器必须给套接字命名。
+
+  - ```c
+    int bind(int socket, const struct sockadd * address, size_t address_len);
+    ```
+
+  - bind系统调用把参数address中的地址分配给与文件描述符socket关联的未命名套接字。
+
+- 创建套接字对列：
+
+  - 为了能够在套接字上接收进入的连接，服务器程序必须创建一个对列来保存未处理的请求。
+
+  - ```c
+    int listen(int socket, int backlog);
+    ```
+
+- 接收连接：
+
+  - 一旦服务器创建并命名了套接字之后，它就可以通过accept系统调用来等待客户建立对该套接字的连接。
+
+  - ```c
+    int accept(int socket, struct sockaddr * address, size_t *address_len);
+    ```
+
+  - accept只有当客户程序试图连接到有socket参数指定的套接字上时才返回。
+
+- 请求连接：
+
+  - 客户程序通过在一个未命名套接字和服务器监听套接字之间建立连接的方法来连接到服务器。
+
+  - ```c
+    int connect(int socket, const struct sockaddr * address, size_t address_len);
+    ```
+
+  - socket指定的套接字将连接到参数address指定的服务器套接字，address指向的结构的长度由参数address_len指定。
+
+- 关闭套接字：用close函数来终止服务器和客户端上的套接字连接。
