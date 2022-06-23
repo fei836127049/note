@@ -126,25 +126,119 @@ char *strcat(char *dest, const char *src)
 }
 
 /*把 src 所指向的字符串追加到 dest 所指向的字符串的结尾，直到 n 字符长度为止。*/
-char *strncat(char *dest, const char *src, size_t n);
+char *strncat(char *dest, const char *src, size_t n)
+{
+	char * p = dest;
+	/*将指针p移动到dest末尾*/
+	while('\0' != *p)
+	{
+		p++;
+	}
+	for(int i = 0; '\0' != src[i] && i < n; i++)
+	{
+		p[i] = src[i];
+	}
+	return dest;
+}
 
 /*在参数 str 所指向的字符串中搜索第一次出现字符 c（一个无符号字符）的位置。*/
-char *strchr(const char *str, int c);
+char *strchr(const char *str, int c)
+{
+	const char * p = str;
+	while(*p != c && '\0' != *p)
+	{
+		p++;
+	}
+	return (char *)p;
+	
+}
 
 /*把 str1 所指向的字符串和 str2 所指向的字符串进行比较。*/
-int strcmp(const char *str1, const char *str2);
+int strcmp(const char *str1, const char *str2)
+{
+	char * str_1 = (char *)str1;
+	char * str_2 = (char *)str2;
+	int ans = 0;
+	assert(NULL != str1 && NULL != str2);
+	while(*str_1 == *str_2)
+	{
+		ans = *str_1 - *str_2;
+		if(0 == ans)
+		{
+			break;
+		}
+		str_1++;
+		str_2++;
+	}
+	return ans;
+	
+}
 
 /*把 str1 和 str2 进行比较，最多比较前 n 个字节。*/
-int strncmp(const char *str1, const char *str2, size_t n);
+int strncmp(const char *str1, const char *str2, size_t n)
+{
+	char * str_1 = (char *)str1;
+	char * str_2 = (char *)str2;
+	int ans = 0;
+	assert(NULL != str1 && NULL != str2);
+	while((*str_1 == *str_2) && n-- > 0)
+	{
+		ans = *str_1 - *str_2;
+		if(0 != ans)
+		{
+			break;
+		}
+		str_1++;
+		str_2++;
+	}
+	return ans;
+
+}
 
 /*把 src 所指向的字符串复制到 dest。*/
-char *strcpy(char *dest, const char *src);
+char *strcpy(char *dest, const char *src)
+{
+	char * dest_ = dest;
+	char * src_ = (char *)src;
+	if(NULL == dest || NULL == src)
+	{
+		return NULL;
+	}
+	while((*dest_++ = *src_++) != '\0')
+	{
+		;
+	}
+	return dest_;
+}
 
 /*把 src 所指向的字符串复制到 dest，最多复制 n 个字符。*/
-char *strncpy(char *dest, const char *src, size_t n);
+char *strncpy(char *dest, const char *src, size_t n)
+{
+	char * dest_ = dest;
+	while(n > 0)
+	{
+		if((*dest_ = *src) != '\0')
+		{
+			src++;
+		}
+		dest_++;
+		n--;
+	}
+	return dest;
+}
 
 /*计算字符串 str 的长度，直到空结束字符，但不包括空结束字符。*/
-size_t strlen(const char *str);
+size_t strlen(const char *str)
+{
+	char * str_l = (char *)str;
+	int len = 0;
+	while(*str_l != '\0')
+	{
+		len++;
+		str_l++;
+	}
+	return len;
+}
 
 ```
 
