@@ -56,7 +56,7 @@ ulimit -c
 gdb /home/code/leetcode/LeetCode100/code_out/exist core-exist-227127-1657095332
 ```
 
-![coredump查看](E:\gitee笔记\note\嵌入式\pic\coredump查看.png)
+![coredump查看](/pic/coredump查看.png)
 
 为了定位问题，常常需要进行单步跟踪，设置断点之类的操作。
 
