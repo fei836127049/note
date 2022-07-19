@@ -46,18 +46,11 @@
   - 对数据包的当前label需要做的操作，包括了：
 
   - - 替换（SWAP）
-
     - ![MPLS_4](/pic/MPLS_4.PNG)
-
-- ​
-
-- - - 删除（POP）
-
-    - ![MPLS_5](/pic/MPLS_5.PNG)
-
+    - 删除（POP）![MPLS_5](/pic/MPLS_5.PNG
     - 添加（PUSH）
 
-    - ![MPLS_6](/pic/MPLS_6.PNG)
+  ![MPLS_6](/pic/MPLS_6.PNG)
 
 - LER（Label Edge Router）：有的地方也叫做 MPLS edge node。顾名思义，MPLS网络的边缘设备。
 
