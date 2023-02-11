@@ -48,6 +48,49 @@ export LESSCHARSET=utf-8
 经过以上步骤，我们会发现可以正常显示中文注释了。
 ```
 
+### 分支管理
+
+git新建分支
+
+```git
+##新建分支并切换到该分支
+git checkout -b 新分支名
+```
+
+切换分支
+
+```git
+git checkout master
+```
+
+合并分支
+
+```git
+git merge dev
+```
+
+删除分支
+
+```git
+git branch -d 分支名
+```
+
+分支的远程发布
+
+```git
+git push origin 分支名
+```
+
+分支的远程删除
+
+```git
+git push origin:分支名   ##分支名前的冒号代表删除分支
+```
+
+
+
+
+
 ### 一、部署环境与准备
 
 ##### 1.环境
