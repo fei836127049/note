@@ -1,0 +1,28 @@
+登录页：http://192.168.1.1:8080/cgi-bin/login.asp
+
+用户名密码：telecomadmin/nE7jA%5m或者：useradmin/12345
+
+升级页：http://192.168.1.1:8080/cgi-bin/upgrade.asp
+
+telnet开启页：http://192.168.1.1:8080/cgi-bin/telnet.asp
+
+
+telnet设备用户名密码：telnetadmin/telnetadmin
+管理员密码：telnetadmin
+查看设备基本信息：cat /etc/devInf.conf
+查看设备基本Mac地址：ifconfig br0
+Telnet下更新设备进行与boot：
+1、cd /tmp
+2、导入镜像：tftp -gr 镜像名 PC机IP
+3、写入镜像：mtd -f write 镜像名 tclinux   (系统进行主分区)
+		  mtd -f write 镜像名 tclinux  （系统进行备用分区）
+		  mtd -f write 镜像名 bootloader  （写入boot分区）
+
+设备拉文件到本地：
+1、进到当前需要导出的目录
+2、tftp -pl 需要导出的文件名 PC机IP
+
+恢复出产设置：prolinecmd restore default
+查看版本信息：cat /proc/version
+		   cat /etc/deviceParaStatic.conf
+		   cat /etc/fwver.conf

@@ -47,7 +47,7 @@
 
   - - 替换（SWAP）
     - ![MPLS_4](/pic/MPLS_4.PNG)
-    - 删除（POP）![MPLS_5](/pic/MPLS_5.PNG
+    - 删除（POP）![MPLS_5](/pic/MPLS_5.PNG)
     - 添加（PUSH）
 
   ![MPLS_6](/pic/MPLS_6.PNG)
@@ -113,4 +113,4 @@ P：服务提供商的路由器，对应LSR。
 
 到此为止，MPLS的data plane描述完了。MPLS是个很大话题，如果还有下次的话，应该会说说LSP的建立过程，也就是LDP（Label Distribution Protocol）。
 
-转载自知乎：https://zhuanlan.zhihu.com/p/27232535
+> 转载自知乎：https://zhuanlan.zhihu.com/p/27232535
